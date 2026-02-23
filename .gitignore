@@ -1,0 +1,5 @@
+.env
+env/
+notes/
+build/
+out.csv
