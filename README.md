@@ -19,3 +19,4 @@ Simply give exection permissions and run the script: `./run.sh`.
 
 - read things in from a config file
 - automate running multiple models at different max tokens
+- add pep8 checks for fun?
