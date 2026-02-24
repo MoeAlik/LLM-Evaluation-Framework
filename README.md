@@ -13,7 +13,7 @@ This project combines the [qwen](https://huggingface.co/Qwen) family of models a
 
 It is highly recommended to run this project in a custom environment with `pip3` installed.
 
-Simply give exection permissions and run the script: `./run.sh`.
+Simply give execution permissions and run the script: `./run.sh`.
 
 ### TODOs
 
