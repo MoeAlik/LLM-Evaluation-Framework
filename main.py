@@ -92,7 +92,6 @@ def generate_csv():
             writer.writerow(row)
 
 def main():
-    validate_settings()
     run_model()
     print_stats()
     generate_csv()
