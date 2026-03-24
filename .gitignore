@@ -2,4 +2,4 @@
 env/
 notes/
 build/
-out.csv
+*.csv
