@@ -1,0 +1,89 @@
+<!-- You must include this JavaScript file -->
+<script src="https://assets.crowd.aws/crowd-html-elements.js"></script>
+
+<style>
+  .reveal-btn {
+    padding: 8px 16px;
+    background: #0073bb;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  .reveal-btn:hover { background: #005a8e; }
+
+  .hidden-text {
+    display: none;
+    margin-top: 10px;
+    padding: 12px;
+    background: #f0f8ff;
+    border-left: 4px solid #0073bb;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+</style>
+
+<script>
+function revealText(btn) {
+  var textDiv = btn.nextElementSibling;
+  if (textDiv.style.display === 'block') {
+    textDiv.style.display = 'none';
+    btn.textContent = 'Show Output';
+  } else {
+    textDiv.style.display = 'block';
+    btn.textContent = 'Hide Output';
+  }
+}
+</script>
+
+<!-- For the full list of available Crowd HTML Elements and their input/output documentation,
+      please refer to https://docs.aws.amazon.com/sagemaker/latest/dg/sms-ui-template-reference.html -->
+<!-- You must include crowd-form so that your task submits answers to MTurk -->
+<crowd-form answer-format="flatten-objects">
+
+    <!-- The crowd-classifier element will create a tool for the Worker to select the
+           correct answer to your question -->
+    <crowd-classifier 
+      name="sentiment"
+      categories="['A', 'B', 'C', 'D']"
+      header="What is the answer to this techincal question?"
+    >
+
+
+
+      <classification-target>
+        <!-- The text you want classified will be substituted for the "text" variable when you 
+               publish a batch with a CSV input file containing multiple text items  -->
+        ${Input} <br>
+        A. ${answer1}<br>
+        B. ${answer2}<br>
+        C. ${answer3}<br>
+        D. ${answer4}<br>
+      </classification-target>
+
+
+
+     <!-- Use the short-instructions section for quick instructions that the Worker
+            will see while working on the task. Including some basic examples of
+            good and bad answers here can help get good results. You can include 
+            any HTML here. -->
+      <short-instructions>
+       Choose the correct answer that the question. See the full instructions for more details.
+      </short-instructions>
+
+
+
+      <!-- Use the full-instructions section for more detailed instructions that the 
+            Worker can open while working on the task. Including more detailed 
+            instructions and additional examples of good and bad answers here can
+            help get good results. You can include any HTML here. -->
+      <full-instructions header="Computational Analysis Instructions">
+        To the best of your ability answer the techincal question and select an answer. If you have the option to use AI, do so sparingly if you determine that you cannot solve the problem quickly in your head. If the button is not revelead to you, try to solve the questions to the best of your ability. Some AI responses might be incomplete, incorrect, or broken.<br>
+        Answer questions until you reach 15 questions solved and then you are finished. Try not to solve more than 15 questions. 
+      </full-instructions>
+
+    </crowd-classifier>
+
+</crowd-form>
+

@@ -1,6 +1,8 @@
 import torch
 import re
 import csv
+from html import escape
+from codecs import encode, decode
 
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from datasets import load_dataset
@@ -21,7 +23,7 @@ model = AutoModelForCausalLM.from_pretrained(
 )
 dataset = load_dataset("cais/mmlu", "elementary_mathematics", split="test").select(range(TASKS_SELECTED))
 
-headers = ["Input","answer1","answer2","answer3","answer4","Model Output"]
+headers = ["Input","answer1","answer2","answer3","answer4","model_output"]
 all_respones = []
 
 incomplete_responses = []
@@ -37,9 +39,9 @@ def format_question(example):
 
     formatted_question = ""
 
-    formatted_question += f"{question}<br>"
+    formatted_question += f"{question}"
     for i, choice in enumerate(choices):
-        formatted_question += f"{convert_offset_to_letter(i)}, {choice}<br>"
+        formatted_question += f"{convert_offset_to_letter(i)}, {choice}"
 
     return formatted_question
 
@@ -67,14 +69,47 @@ def run_model():
         choices = list(prompt["choices"]) # pyright: ignore[reportArgumentType, reportCallIssue]
         question = str(prompt["question"]) # pyright: ignore[reportArgumentType, reportCallIssue]
 
-        print(resp)
 
-        resp = resp.replace('\r\n', '<br>')
-        resp = resp.replace('\r', '<br>')
-        resp = resp.replace('\n', '<br>')
+        # resp = resp.replace('\r\n', '<br>')
+        # resp = resp.replace('\r', '<br>')
+        # resp = resp.replace('\n', '<br>')
+        # resp = resp.replace('\\', '')
+        # question = question.replace('\r\n', '<br>')
+        # question = question.replace('\r', '<br>')
+        # question = question.replace('\n', '<br>')
+        # question = question.replace('\\', '')
+        
+        # for choice in choices:
+        #     choice = choice.replace('\r\n', '<br>')
+        #     choice = choice.replace('\r', '<br>')
+        #     choice = choice.replace('\n', '<br>')
+        #     choice = choice.replace('\\', '')
+
+        row = [question, *choices, resp]
+
+        def clean_for_mturk(s):
+            # Convert to string in case input isn't
+            s = str(s)
+            s = s.replace('\n', '<br>')
+            # s = s.replace('{', ' ')
+            # s = s.replace('}', ' ')
+            # s = s.replace('&', '&amp;')
+            # # Remove null bytes and control characters (except newline/tab)
+            # s = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]', '', s)
+            # # Remove ${...} style template patterns before escaping
+            # s = re.sub(r'\$\{[^}]*\}', '', s)
+            # # Escape HTML special characters
+            # s = escape(s, quote=True)
+            # # Escape any remaining $ and braces
+            # s = s.replace('$', '&#36;')
+            # s = s.replace('{', '&#123;')
+            # s = s.replace('}', '&#125;')
+            return s
+
+        row = [clean_for_mturk(col) for col in row]
 
         all_respones.append(
-            [question, *choices, resp]
+            row
         )
 
         if not matches:
@@ -121,7 +156,7 @@ def generate_csv():
 
 def main():
     run_model()
-    print_stats()
+    # print_stats()
     generate_csv()
 
 if __name__ == '__main__':
